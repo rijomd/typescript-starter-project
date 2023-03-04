@@ -1,18 +1,42 @@
 1.  ######### NORMAL TABLE COMPONENT ###########
     Table props:-
 
-        import {selectBox} from "...//path
 
-    let headers: any[] = [
-    {name: "id",headerName:"a", isFilterEnabled: true,filterComponent: "",},{ name: "name" ,headerName:"c",isFilterEnabled: false,filterComponent: selectBox,},
-    {name: "status",renderDataContent: (data: any) => {return <Component />}},
-    ];
+  let headers: any[] = [
+    {
+      name: "dob",
+      headerName: "DOB",
+      isFilterEnabled: true,
+    },
+    {
+      name: "status",
+      headerName: "STATUS",
+      isFilterEnabled: true,
+      renderDataContent: (data: any) => {
+        return data === "active" ? (
+          <p style={{ color: "green" }}>Active</p>
+        ) : (
+          <p style={{ color: "red" }}>InActive</p>
+        );
+      },
+      FilterComponent: (props: any) => {
+        return (
+          <SelectBox
+            {...props}
+            onChange={(data: any) => props.onchange(data)}
+            dataCompo={statusCompo}
+          />
+        );
+      },
+    },
+  ];
 
 let tableData:any=[];
 
 let extraColumn: any[] = [{
 headerName: "Actions",
 content: <div style={{ color: "red" }}>HERE</div>,
+style: { width: "10%" },
 onClick: (data: any) => {
 console.log(data, "hhh");},
 }];
@@ -38,7 +62,8 @@ capitalizingHeaders={true}
 changeColumnData={changeColumnData}
 pagination={true}
 footerStyle={{}}
-onRowClick={() => {}}
+onRowClick={() => {}} //false :-no action or any function
 onRowSelected={true or false}  //for checked rows
+onChangeRowSelected={(item: any[]) => console.log(item)}
 sortBy={"name"}  //sort by initial
 </NormalTable> -->
