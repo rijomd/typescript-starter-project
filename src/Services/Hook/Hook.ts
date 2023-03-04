@@ -5,7 +5,7 @@ import type { RootState, AppDispatch } from "../Store/Store";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 interface IUseFetchWithAbortResponse {
-  fetchedData: unknown;
+  fetchedData: any;
   isLoading: boolean;
   error: Error | null;
 }
@@ -57,10 +57,9 @@ export const useFetchWithAbort = (
   const [fetchedData, setFetchedData] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
   useEffect(() => {
-    let abortController = new AbortController();
     (async () => {
+      let abortController = new AbortController();
       try {
         if (endpoint) {
           const response = await fetch(endpoint, {
@@ -84,11 +83,15 @@ export const useFetchWithAbort = (
         setIsLoading(false);
       }
     })();
-    return () => {
-      abortController.abort();
-    };
+    return () => {};
   }, [endpoint, options]);
 
   return { fetchedData, isLoading, error };
 };
 // ************************** fetching method***********************
+
+// **************************** forcefull rendering ***************
+export const useForceUpdate = () => {
+  const [value, setValue] = useState(0);
+  return () => setValue((value) => value + 1);
+};

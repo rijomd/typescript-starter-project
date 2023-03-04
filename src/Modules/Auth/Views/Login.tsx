@@ -1,20 +1,23 @@
-import { useState, memo, useEffect } from "react";
+import { useState, memo, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Box, Grid } from "@mui/material";
 
 import { TextInput, FormButton } from "../../../Components/FormElements";
-import { loginUrl } from "../Config/urlConstants";
+import { SnackBar } from "../../../Components/AlertBoxes/SnackBar";
 
+import { loginUrl } from "../Config/urlConstants";
 import { useAppDispatch, useFetchWithAbort } from "../../../Services/Hook/Hook";
-import {
-  getRequestHeaders,
-  getMyAPiUrl,
-} from "../../../Services/Methods/Authmethods";
+
+import { getRequestHeaders } from "../../../Services/Methods/Authmethods";
 import { loginAction } from "../../../Modules/Auth/Reducer/AuthAction";
 
 const Login = () => {
   const [login, setlogin] = useState({ username: "", password: "" });
   const [isLoading, setLoading] = useState(false);
+  const [isopenAlert, setOpenAlert] = useState(false);
+  const [typeOfAlert, setTypeOfAlert] = useState("");
+  const [alertMessege, setAlertMessege] = useState("");
+
   const [url, setMyUrl] = useState<string>("");
   const [requestOptions, setRequestOptions] = useState<any>({});
 
@@ -33,24 +36,52 @@ const Login = () => {
     setLoading(true);
     let options = await getRequestHeaders("POST", login);
     setRequestOptions(options);
-    let myApi = getMyAPiUrl() + "/" + loginUrl;
-    setMyUrl(myApi);
+    setMyUrl(loginUrl);
   };
 
   useEffect(() => {
-    if (loginRequest?.fetchedData) {
-      let fetchedData: any = loginRequest?.fetchedData;
-      let data = {
-        access_token: fetchedData?.data?.access_token,
-        user: fetchedData?.data?.user,
-      };
-      setLoading(false);
-      if (fetchedData.status) {
-        dispatch(loginAction(data, true));
-        navigate("/");
+    (async () => {
+      if (loginRequest?.fetchedData) {
+        let fetchedData: any = loginRequest?.fetchedData;
+        if (Object.keys(fetchedData).length !== 0) {
+          let data = {
+            access_token: fetchedData?.data?.token,
+            user: fetchedData?.data?.user,
+          };
+          setLoading(false);
+          setOpenAlert(true);
+          setAlertMessege(fetchedData.message);
+          if (fetchedData.error_code === 200) {
+            setTypeOfAlert("success");
+            dispatch(loginAction(data, true));
+            navigate("/");
+            window.location.reload();
+          } else {
+            setTypeOfAlert("error");
+          }
+        }
       }
-    }
+    })();
   }, [loginRequest?.fetchedData]);
+
+  const snacksbar = useMemo(() => {
+    if (isopenAlert) {
+      return (
+        <SnackBar
+          open={isopenAlert}
+          handleClose={() => setOpenAlert(false)}
+          message={alertMessege}
+          typeOfAlert={typeOfAlert}
+          vertical="top"
+          horizontal="center"
+          transitionElement={{
+            element: "SlideTransition",
+            direction: "down",
+          }}
+        />
+      );
+    }
+  }, [isopenAlert]);
 
   return (
     <Box sx={{ display: "contents" }}>
@@ -84,7 +115,7 @@ const Login = () => {
               name="password"
               type="password"
               fullWidth={false}
-              onKeyPress={() => {}}
+              onKeyPress={handleSumbit}
               onChange={(name, value) => handleChange(name, value)}
               required={true}
               error={{ isError: false, errorMsg: "" }}
@@ -97,6 +128,7 @@ const Login = () => {
               loading={isLoading}
               onClick={handleSumbit}
               style={{}}
+              color="primary"
             >
               Save{" "}
             </FormButton>
@@ -104,6 +136,8 @@ const Login = () => {
           </Grid>
         </Box>
       </Grid>
+
+      {snacksbar}
     </Box>
   );
 };

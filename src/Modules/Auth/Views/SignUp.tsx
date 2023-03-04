@@ -1,23 +1,29 @@
-import { useState, memo } from "react";
+import { useState, memo, useEffect, useMemo } from "react";
 import { Box, Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 
 import { TextInput, FormButton } from "../../../Components/FormElements";
 import { SnackBar } from "../../../Components/AlertBoxes/SnackBar";
 
-import { useAppDispatch } from "../../../Services/Hook/Hook";
 import { signUpAction } from "../Reducer/AuthAction";
-import { requestMethod } from "../../../Services/Request";
-
 import { signInUrl } from "../Config/urlConstants";
+
+import { getRequestHeaders } from "../../../Services/Methods/Authmethods";
+import { useAppDispatch, useFetchWithAbort } from "../../../Services/Hook/Hook";
 
 type Props = {};
 const SignUp = (props: Props) => {
   const [signin, setsignin] = useState({ email: "", password: "" });
-  const [isopenAlert, setOpenAlert] = useState(false);
-  const [isLoading, setLoading] = useState(false);
+  const [isopenAlert, setOpenAlert] = useState<boolean>(false);
+  const [typeOfAlert, setTypeOfAlert] = useState("");
+
   const [alertMessege, setAlertMessege] = useState("");
+  const [isLoading, setLoading] = useState(false);
+  const [url, setMyUrl] = useState<string>("");
+  const [requestOptions, setRequestOptions] = useState<any>({});
+
   const dispatch = useAppDispatch();
+  const signinRequest = useFetchWithAbort(url, requestOptions);
 
   const handleChange = (name: string, value: string) => {
     setsignin({
@@ -28,14 +34,47 @@ const SignUp = (props: Props) => {
 
   const handleSumbit = async () => {
     setLoading(true);
-    await requestMethod(signInUrl, signin, "post").then((res) => {
-      console.log(res);
-      dispatch(signUpAction(res?.data));
-      setLoading(false);
-      setAlertMessege(res.message);
-      setOpenAlert(true);
-    });
+    let options = await getRequestHeaders("POST", signin);
+    setRequestOptions(options);
+    setMyUrl(signInUrl);
   };
+
+  useEffect(() => {
+    if (signinRequest?.fetchedData) {
+      let fetchedData: any = signinRequest?.fetchedData;
+      if (Object.keys(fetchedData).length !== 0) {
+        setLoading(false);
+        setAlertMessege(fetchedData.message);
+        if (fetchedData.error_code === 200) {
+          setTypeOfAlert("success");
+          setOpenAlert(true);
+          dispatch(signUpAction(fetchedData.data));
+        } else {
+          setTypeOfAlert("error");
+          setOpenAlert(true);
+        }
+      }
+    }
+  }, [signinRequest?.fetchedData]);
+
+  const snacksbar = useMemo(() => {
+    if (isopenAlert) {
+      return (
+        <SnackBar
+          open={isopenAlert}
+          handleClose={() => setOpenAlert(false)}
+          message={alertMessege}
+          typeOfAlert={typeOfAlert}
+          vertical="top"
+          horizontal="center"
+          transitionElement={{
+            element: "SlideTransition",
+            direction: "down",
+          }}
+        />
+      );
+    }
+  }, [isopenAlert]);
 
   return (
     <Box sx={{ display: "contents" }}>
@@ -57,9 +96,9 @@ const SignUp = (props: Props) => {
               fullWidth={false}
               onChange={(name, value) => handleChange(name, value)}
               required={true}
+              onKeyPress={() => {}}
               error={{ isError: false, errorMsg: "" }}
               value={signin.email}
-              onKeyPress={() => {}}
             />
           </Grid>
           <Grid item xs={12} sx={{ mt: "8px" }}>
@@ -68,17 +107,18 @@ const SignUp = (props: Props) => {
               placeholder="Password"
               name="password"
               type="password"
+              onKeyPress={() => {}}
               fullWidth={false}
               onChange={(name, value) => handleChange(name, value)}
               required={true}
               error={{ isError: false, errorMsg: "" }}
               value={signin.password}
-              onKeyPress={() => {}}
             />
           </Grid>
           <Grid item xs={12} sx={{ mt: "8px" }} textAlign="end">
             <FormButton
               fullWidth={true}
+              color="primary"
               loading={isLoading}
               onClick={handleSumbit}
               style={{}}
@@ -88,21 +128,7 @@ const SignUp = (props: Props) => {
             <Link to="/login">Login</Link>
           </Grid>
         </Box>
-
-        {isopenAlert && (
-          <SnackBar
-            open={isopenAlert}
-            handleClose={() => setOpenAlert(false)}
-            message={alertMessege}
-            typeOfAlert="success"
-            vertical="top"
-            horizontal="center"
-            transitionElement={{
-              element: "SlideTransition",
-              direction: "down",
-            }}
-          />
-        )}
+        {snacksbar}
       </Grid>
     </Box>
   );
