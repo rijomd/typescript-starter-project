@@ -14,7 +14,7 @@ type Props = {
 export const DatePickerSearch = ({ onChange }: Props) => {
   const [value, setValue] = useState<Dayjs | null>(dayjs(null));
 
-  const handleChange = (newValue: any | null) => {
+  const handleChange = (newValue: Dayjs | null) => {
     setValue(newValue);
     onChange(newValue?.toISOString());
   };
@@ -24,9 +24,18 @@ export const DatePickerSearch = ({ onChange }: Props) => {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Stack spacing={3}>
           <DesktopDatePicker
-            views={['year', 'month', 'day']}
+            inputFormat="DD/MM/YYYY"
             value={value}
             onChange={handleChange}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                sx={{ background: "#fff" }}
+                size="small"
+                error={false}
+                placeholder="Date"
+              />
+            )}
           />
         </Stack>
       </LocalizationProvider>
