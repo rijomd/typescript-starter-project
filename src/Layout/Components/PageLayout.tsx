@@ -23,7 +23,7 @@ export const PageLayout = (props: Props) => {
     layout: {
       width: "100%",
       background: "#fff",
-      margin: useMobile() ? "0px" : "1.3rem",
+      margin: "0px",
       marginBottom: "0px",
       padding: "8px",
     },

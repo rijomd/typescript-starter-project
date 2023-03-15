@@ -1,5 +1,6 @@
 import React, { lazy, Suspense, FC, useMemo } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { Grid } from "@mui/material";
 
 import { Loader } from "../../Components/Loader/Loader";
 
@@ -81,8 +82,14 @@ export const GeneralRoutes = React.memo(() => {
     <div>
       <BrowserRouter>
         <Suspense fallback={<Loader />}>
-          {headerMenu}
-          <div style={{ display: "flex", minHeight: "90vh" }}>
+          <div>{headerMenu}</div>
+          <div
+            style={{
+              display: "flex",
+              minHeight: "90vh",
+              marginTop: "4rem",
+            }}
+          >
             {sideBarMenu}
             {renderGeneratedRoutes}
           </div>

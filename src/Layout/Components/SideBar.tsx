@@ -85,7 +85,7 @@ const SideBar = () => {
   };
 
   return (
-    <Box sx={{ width: "260px", background: "#fff", marginTop: "5px" }}>
+    <Box sx={{ width: "260px", background: "#fff", marginRight: "5px" }}>
       {Menu.map((item, key) => {
         if (item.submenu.length > 0) {
           return renderNavigation(item, key, "submenu");

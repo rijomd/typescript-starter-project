@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { AppBar, Box, Toolbar, IconButton, Typography } from "@mui/material";
+import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -59,29 +59,27 @@ const Header = () => {
   ];
 
   return (
-    <Box sx={styles.flexGrow}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={styles.mr}
-            onClick={() => openSideBar()}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" component="div" sx={styles.flexGrow}>
-            Chat
-          </Typography>
-          <MenuComponent
-            headers={<AccountCircleIcon style={{ cursor: "pointer" }} />}
-            menuItems={actions}
-          />
-        </Toolbar>
-      </AppBar>
-    </Box>
+    <AppBar position="static">
+      <Toolbar>
+        <IconButton
+          size="large"
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          sx={styles.mr}
+          onClick={() => openSideBar()}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Typography variant="h6" component="div" sx={styles.flexGrow}>
+          Chat
+        </Typography>
+        <MenuComponent
+          headers={<AccountCircleIcon style={{ cursor: "pointer" }} />}
+          menuItems={actions}
+        />
+      </Toolbar>
+    </AppBar>
   );
 };
 export default Header;
