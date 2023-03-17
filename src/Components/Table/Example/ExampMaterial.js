@@ -1,3 +1,5 @@
+// import { Box } from "@mui/material";
+
 // import { MaterialReactTableComponent } from "../../../Components/Table";
 // import { dataArray } from "../../../Components/Table/data";
 // import { PageLayout } from "../../../Layout/Components/PageLayout";
@@ -23,11 +25,20 @@
 //     {
 //       accessorKey: "runtime",
 //       header: "Runtime",
+//       aggregationFn: "sum",
+//       AggregatedCell: ({ cell }: any) => (
+//         <div>Total Runtime: {cell.getValue()}</div>
+//       ),
 //     },
 //     {
 //       accessorKey: "actors",
 //       enableColumnOrdering: false,
 //       header: "Actors",
+//     },
+//     {
+//       accessorKey: "country",
+//       header: "Country",
+//       aggregationFn: "max",
 //     },
 //   ];
 
@@ -37,8 +48,17 @@
 //         <MaterialReactTableComponent
 //           tableData={dataArray}
 //           columnData={columnData}
-//           getSubRows={(data: any) => data.general} //for get
-//           enableExpanding
+//           getSubRows={(data: any) => data.general} //for getting subRows for expanding
+//           enableExpanding={false} //subRows for expanding conditions
+//           enableColumnResizing={true} //enable resize columns
+//           enableGrouping={false} // enabling grouping and arrows
+//           initialState={{
+//             density: "compact",
+//             expanded: false, //expand all groups by default
+//             grouping: ["country"], //an array of columns to group by by default (can be multiple)
+//             pagination: { pageIndex: 0, pageSize: 40 },
+//             sorting: [{ id: "state", desc: false }], //sort by state by default
+//           }}
 //         />
 //       </div>
 //     </PageLayout>

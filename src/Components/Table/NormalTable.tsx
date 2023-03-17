@@ -13,7 +13,10 @@ import {
   Box,
 } from "@mui/material";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import TableFooter from "@mui/material/TableFooter";
+
 import { styled } from "@mui/material/styles";
+import TextField from "@mui/material/TextField";
 
 import { changDataContent } from "./Methods/TableMethods";
 import { capitalizingData } from "../../Utils/HelperFunctions";
@@ -197,19 +200,17 @@ export const NormalTable = ({
                   })}
                 </>
               ) : (
-                <input
-                  placeholder={item.headerName}
-                  style={{
-                    backgroundColor: "#fff",
-                    margin: "5px 0px",
-                    outline: "none",
-                    border: "none",
-                    height: "30px",
+                <TextField
+                  sx={{
+                    background: "#fff",
                     width: "100%",
-                    padding: "5px",
+                    borderRadius: "5px",
                   }}
-                  onChange={(e) => handleFilter(e?.target.value, item.name)}
+                  placeholder={item.headerName}
+                  variant="outlined"
+                  size="small"
                   value={values[item.name]}
+                  onChange={(e) => handleFilter(e?.target.value, item.name)}
                 />
               )}
             </div>
@@ -307,7 +308,12 @@ export const NormalTable = ({
           stickyHeader={true}
           size="small"
           aria-label="a dense table"
-          sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
+          sx={{
+            borderCollapse: "separate",
+            tableLayout: "fixed",
+            margin: "auto",
+            width: "auto",
+          }}
         >
           <TableHead>
             <TableRow>
@@ -440,14 +446,20 @@ export const NormalTable = ({
                 </TableBody>
               );
             })}
+          {normalTableData?.length === 0 && (
+            <TableFooter>
+              <TableRow>
+                <TableCell
+                  sx={{ textAlign: "center", border: "none" }}
+                  colSpan={headerValues.length + extraColumn?.length}
+                >
+                  No records found
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          )}
         </Table>
       </TableContainer>
-
-      {normalTableData?.length === 0 && (
-        <div style={{ width: "100%", textAlign: "center", margin: "1rem 0px" }}>
-          No records found
-        </div>
-      )}
 
       {pagination && (
         <TablePagination
