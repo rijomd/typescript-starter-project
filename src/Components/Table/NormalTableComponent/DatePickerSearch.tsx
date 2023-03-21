@@ -30,10 +30,10 @@ export const DatePickerSearch = ({ onChange }: Props) => {
             renderInput={(params) => (
               <TextField
                 {...params}
-                sx={{ background: "#fff" }}
                 size="small"
                 error={false}
                 placeholder="Date"
+                variant="standard"
               />
             )}
           />

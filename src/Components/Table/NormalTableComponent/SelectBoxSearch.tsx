@@ -19,7 +19,7 @@ export const SelectBoxSearch = ({
   return (
     <div>
       <Select
-        sx={{ width: "100%", background: "#fff" }}
+        sx={{ width: "100%" }}
         labelId="demo-simple-select-label"
         id="demo-simple-select"
         value={target}

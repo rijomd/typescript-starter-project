@@ -37,6 +37,7 @@ type headersInterface = {
   renderDataContent: (data: any) => {};
   isFilterEnabled: boolean;
   FilterComponent: any;
+  width: string;
 };
 type Props = {
   headers: any[];
@@ -182,9 +183,9 @@ export const NormalTable = ({
     return headerValues.map((item: headersInterface, key: number) => {
       const { FilterComponent } = item;
       return (
-        <StyledTableCell key={key}>
+        <StyledTableCell key={key} style={{ width: item.width }}>
           <TableSortLabel
-            style={{ padding: "0px 5px" }}
+            style={{ fontSize: "16px" }}
             active={orderBy === item.name}
             direction={orderBy === item.name ? order : "asc"}
             onClick={() => handleRequestSort(item.name)}
@@ -192,7 +193,7 @@ export const NormalTable = ({
             {item.headerName}
           </TableSortLabel>
           {item.isFilterEnabled && (
-            <div>
+            <div style={{ padding: "5px 0px" }}>
               {FilterComponent ? (
                 <>
                   {FilterComponent({
@@ -201,14 +202,12 @@ export const NormalTable = ({
                 </>
               ) : (
                 <TextField
-                  sx={{
-                    background: "#fff",
-                    width: "100%",
-                    borderRadius: "5px",
-                  }}
-                  placeholder={item.headerName}
-                  variant="outlined"
+                  sx={{ width: "100%" }}
+                  inputProps={{ Style: { fontSize: 12 } }}
+                  placeholder={`Filter By ${capitalizingData(item.headerName)}`}
+                  variant="standard"
                   size="small"
+                  autoComplete="off"
                   value={values[item.name]}
                   onChange={(e) => handleFilter(e?.target.value, item.name)}
                 />
@@ -326,7 +325,7 @@ export const NormalTable = ({
               {renderTableHead()}
               {extraColumn?.length > 0 &&
                 extraColumn.map((item: any, key: number) => (
-                  <StyledTableCell key={key} style={{ textAlign: "center" }}>
+                  <StyledTableCell key={key}  style={item.style}>
                     {item.headerName ? (
                       capitalizingData(item.headerName)
                     ) : (
