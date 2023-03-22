@@ -14,7 +14,9 @@ type Props = {
   options: any;
   getOptionDisabled: any;
   multiple: boolean;
+  error: { isError: boolean; errorMsg: string };
   [x: string]: any;
+  required: boolean;
 };
 
 export const FormAutoComplete = ({
@@ -25,6 +27,8 @@ export const FormAutoComplete = ({
   options,
   getOptionDisabled,
   multiple,
+  required,
+  error,
 }: Props) => {
   const [multiOptions, setMultiOptions] = useState([]);
   const [inputValue, setInputValue] = useState<any>("");
@@ -55,7 +59,15 @@ export const FormAutoComplete = ({
             onInputChange={(event: any, newInputValue: any) => {
               setInputValue(newInputValue);
             }}
-            renderInput={(params) => <TextField {...params} label={label} />}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={label}
+                helperText={error.isError ? error.errorMsg : ""}
+                error={error.isError}
+                required={required}
+              />
+            )}
             renderOption={(props, option: any, { selected }) => {
               return (
                 <li {...props}>

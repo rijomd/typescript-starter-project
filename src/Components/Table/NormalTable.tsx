@@ -203,7 +203,6 @@ export const NormalTable = ({
               ) : (
                 <TextField
                   sx={{ width: "100%" }}
-                  inputProps={{ Style: { fontSize: 12 } }}
                   placeholder={`Filter By ${capitalizingData(item.headerName)}`}
                   variant="standard"
                   size="small"

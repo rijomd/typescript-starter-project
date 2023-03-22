@@ -18,7 +18,9 @@ export const DatePickerSearch = ({ onChange }: Props) => {
     setValue(newValue);
     onChange(newValue?.toISOString());
   };
-
+  const onKeyDown = (e: any) => {
+    e.preventDefault();
+  };
   return (
     <div>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -34,6 +36,7 @@ export const DatePickerSearch = ({ onChange }: Props) => {
                 error={false}
                 placeholder="Date"
                 variant="standard"
+                onKeyDown={onKeyDown}
               />
             )}
           />
