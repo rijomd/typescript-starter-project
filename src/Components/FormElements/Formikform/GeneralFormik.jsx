@@ -36,6 +36,7 @@ export const Form = ({ formValues, initialValues, onSubmit }) => {
           handleChange,
           handleSubmit,
           isSubmitting,
+          setFieldValue,
         }) => (
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
@@ -47,7 +48,9 @@ export const Form = ({ formValues, initialValues, onSubmit }) => {
                         label={
                           item.name ? capitalizingData(item.name) : "Label"
                         }
-                        onChange={handleChange}
+                        onChange={(e) => {
+                          handleChange(e);
+                        }}
                         value={values[item.name]}
                         name={item.name}
                         error={{
@@ -61,7 +64,6 @@ export const Form = ({ formValues, initialValues, onSubmit }) => {
                   );
                 }
                 if (item?.type === "autoCompleteSelect") {
-                  console.log(values, "values");
                   return (
                     <Grid item md={4} xs={6} sm={6} lg={3} key={key}>
                       <FormAutoComplete
@@ -71,11 +73,11 @@ export const Form = ({ formValues, initialValues, onSubmit }) => {
                         }
                         disabled={item?.disabled ? item.disabled : false}
                         onChange={(e) => {
-                          console.log(e)
-                          handleChange(e);
+                          setFieldValue(item.name, e);
                         }}
                         value={values[item.name]}
                         name={item.name}
+                        multiple={item.multiple ? true : false}
                         fullWidth={true}
                       />
                     </Grid>
