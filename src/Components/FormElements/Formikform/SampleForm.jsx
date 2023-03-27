@@ -5,12 +5,10 @@ export const SampleForm = () => {
   const countryAutoCompleteCompo = [
     {
       label: "india",
-      name: "india",
       code: "123",
     },
     {
       label: "Aus",
-      name: "aus",
       code: "123",
     },
   ];
@@ -32,24 +30,50 @@ export const SampleForm = () => {
     {
       name: "email",
       type: "text",
-      error: { required: true },
-      disabled: true,
+      disabled: false,
+      validationType: "string",
+      validations: [
+        {
+          type: "required",
+          params: ["Email is required"],
+        },
+        {
+          type: "email",
+          params: ["please enter a valid email"],
+        },
+      ],
     },
     {
       name: "name",
       type: "text",
-      error: { required: true },
+    },
+    {
+      name: "mark",
+      type: "number",
+      validationType: "number",
+      validations: [
+        {
+          type: "required",
+          params: ["Mark  is required"],
+        },
+        {
+          type: "min",
+          params: [35, "Mark cannot be less than 35 "],
+        },
+        {
+          type: "max",
+          params: [100, "Mark cannot be more than 100 "],
+        },
+      ],
     },
     {
       name: "country",
       type: "autoCompleteSelect",
-      error: { required: true },
       autoCompleteCompo: countryAutoCompleteCompo,
     },
     {
       name: "state",
       type: "autoCompleteSelect",
-      error: { required: true },
       autoCompleteCompo: stateAutoCompleteCompo,
       multiple: true,
     },
@@ -57,6 +81,7 @@ export const SampleForm = () => {
   const initialValues = {
     email: "",
     name: "",
+    mark: "",
     country: "",
     state: [],
   };
