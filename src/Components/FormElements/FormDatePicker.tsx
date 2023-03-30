@@ -12,6 +12,10 @@ type Props = {
   disabled: boolean;
   required: boolean;
   error: { isError: boolean; errorMsg: string };
+  fullWidth: boolean;
+  minDate: any;
+  maxDate: any;
+  [x: string]: any;
 };
 
 export const FormDatePicker = ({
@@ -21,6 +25,10 @@ export const FormDatePicker = ({
   disabled,
   error,
   required,
+  fullWidth,
+  minDate,
+  maxDate,
+  ...x
 }: Props) => {
   const [inputValue, setInputValue] = React.useState<Dayjs | null>(null);
 
@@ -38,6 +46,9 @@ export const FormDatePicker = ({
           label={label}
           value={inputValue}
           disabled={disabled}
+          minDate={minDate || null}
+          maxDate={maxDate || null}
+          inputFormat="DD-MM-YYYY"
           onChange={(newValue) => {
             setInputValue(newValue);
             onChange(newValue);
@@ -48,8 +59,12 @@ export const FormDatePicker = ({
               helperText={error.isError ? error.errorMsg : ""}
               error={error.isError}
               required={required}
+              fullWidth={fullWidth}
+              size="small"
+              autoComplete="off"
             />
           )}
+          {...x}
         />
       </LocalizationProvider>
     </div>

@@ -78,15 +78,29 @@ export const SampleForm = () => {
       autoCompleteCompo: stateAutoCompleteCompo,
       multiple: true,
     },
+    {
+      name: "fromDate",
+      type: "date",
+      minDate: new Date(),
+      maxDate: new Date("05-05-2023"),
+    },
+    {
+      name: "toDate",
+      type: "date",
+      minDate: "fromDate",
+      maxDate: new Date("05-05-2023"),
+    },
   ];
   const initialValues = {
     email: "",
     name: "",
     mark: "",
     country: "",
+    fromDate: new Date(),
+    toDate: null,
     state: [],
   };
-  const formiKRef = useRef(null);
+  const formikRef = useRef(null);
 
   return (
     <div>
@@ -94,14 +108,14 @@ export const SampleForm = () => {
         formValues={formValues}
         initialValues={initialValues}
         onSubmit={(data) => {
-          console.log(data);
+          console.log(data, "data");
         }}
-        ref={formiKRef}
+        ref={formikRef}
       />
       <BasicButton
         label="Submit"
         onClick={() => {
-          formiKRef?.current?.onClick();
+          formikRef?.current?.onClick();
         }}
       />
     </div>
