@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Form } from "../../../Components/FormElements/GeneralFormik";
+import { BasicButton } from "./sampleButton";
 
 export const SampleForm = () => {
   const countryAutoCompleteCompo = [
@@ -85,6 +86,7 @@ export const SampleForm = () => {
     country: "",
     state: [],
   };
+  const formiKRef = useRef(null);
 
   return (
     <div>
@@ -93,6 +95,13 @@ export const SampleForm = () => {
         initialValues={initialValues}
         onSubmit={(data) => {
           console.log(data);
+        }}
+        ref={formiKRef}
+      />
+      <BasicButton
+        label="Submit"
+        onClick={() => {
+          formiKRef?.current?.onClick();
         }}
       />
     </div>
