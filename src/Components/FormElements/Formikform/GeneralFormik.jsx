@@ -108,7 +108,6 @@ export const Form = forwardRef(
                       if (item.maxDate && typeof item.maxDate === "string") {
                         maxDate = values[item.maxDate];
                       }
-                      console.log(minDate, maxDate);
                       return (
                         <Grid item md={4} xs={6} sm={6} lg={3} key={key}>
                           <FormDatePicker
@@ -128,6 +127,11 @@ export const Form = forwardRef(
                             minDate={minDate === null ? item.minDate : minDate}
                             maxDate={maxDate === null ? item.maxDate : maxDate}
                             fullWidth={true}
+                            onKeyDown={
+                              item?.handleTextDisable
+                                ? (e) => e.preventDefault()
+                                : () => {}
+                            }
                           />
                         </Grid>
                       );

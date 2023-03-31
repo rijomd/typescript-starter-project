@@ -15,6 +15,7 @@ type Props = {
   fullWidth: boolean;
   minDate: any;
   maxDate: any;
+  onKeyDown: (e: any) => void;
   [x: string]: any;
 };
 
@@ -28,6 +29,7 @@ export const FormDatePicker = ({
   fullWidth,
   minDate,
   maxDate,
+  onKeyDown,
   ...x
 }: Props) => {
   const [inputValue, setInputValue] = React.useState<Dayjs | null>(null);
@@ -56,12 +58,13 @@ export const FormDatePicker = ({
           renderInput={(params) => (
             <TextField
               {...params}
-              helperText={error.isError ? error.errorMsg : ""}
-              error={error.isError}
+              helperText={error.errorMsg?.length > 0 ? error.errorMsg : ""}
+              error={error.errorMsg?.length > 0}
               required={required}
               fullWidth={fullWidth}
               size="small"
               autoComplete="off"
+              onKeyDown={(e) => onKeyDown(e)}
             />
           )}
           {...x}

@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { Form } from "../../../Components/FormElements/GeneralFormik";
 import { BasicButton } from "./sampleButton";
+import * as Yup from "yup";
 
 export const SampleForm = () => {
   const countryAutoCompleteCompo = [
@@ -83,12 +84,35 @@ export const SampleForm = () => {
       type: "date",
       minDate: new Date(),
       maxDate: new Date("05-05-2023"),
+      validationType: "date",
+      validations: [
+        {
+          type: "required",
+          params: ["From Date  is required"],
+        },
+        {
+          type: "max",
+          params: [new Date("05-05-2023"), "From Date have limit "],
+        },
+      ],
+      handleTextDisable: true, //disable handle change on typing
     },
     {
       name: "toDate",
       type: "date",
       minDate: "fromDate",
       maxDate: new Date("05-05-2023"),
+      validationType: "date",
+      validations: [
+        {
+          type: "required",
+          params: ["To Date  is required"],
+        },
+        {
+          type: "min",
+          params: [Yup.ref("fromDate"), "To Date have limit "],
+        },
+      ],
     },
   ];
   const initialValues = {
@@ -97,7 +121,7 @@ export const SampleForm = () => {
     mark: "",
     country: "",
     fromDate: new Date(),
-    toDate: null,
+    toDate: new Date(),
     state: [],
   };
   const formikRef = useRef(null);

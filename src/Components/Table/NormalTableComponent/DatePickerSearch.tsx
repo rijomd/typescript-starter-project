@@ -22,7 +22,6 @@ export const DatePickerSearch = ({ onChange }: Props) => {
     e.preventDefault();
   };
   return (
-    <div>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Stack spacing={3}>
           <DesktopDatePicker
@@ -42,6 +41,5 @@ export const DatePickerSearch = ({ onChange }: Props) => {
           />
         </Stack>
       </LocalizationProvider>
-    </div>
   );
 };
