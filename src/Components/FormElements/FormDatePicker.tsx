@@ -55,7 +55,7 @@ export const FormDatePicker = ({
             setInputValue(newValue);
             onChange(newValue);
           }}
-          renderInput={(params) => (
+          renderInput={(params:any) => (
             <TextField
               {...params}
               helperText={error.errorMsg?.length > 0 ? error.errorMsg : ""}
