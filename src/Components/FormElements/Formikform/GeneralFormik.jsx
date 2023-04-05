@@ -136,6 +136,21 @@ export const Form = forwardRef(
                         </Grid>
                       );
                     }
+                    if (item?.type === "component") {
+                      return (
+                        <Grid item md={4} xs={6} sm={6} lg={3} key={key}>
+                          {item.component({
+                            value: values[item.name],
+                            onChangeData: (data) =>
+                              setFieldValue(item.name, data || null),
+                            error: {
+                              isError: errors[item.name] && touched[item.name],
+                              errorMsg: errors[item.name],
+                            },
+                          })}
+                        </Grid>
+                      );
+                    }
                   })}
                   <Grid item md={4} xs={6} sm={6} lg={3}>
                     <button

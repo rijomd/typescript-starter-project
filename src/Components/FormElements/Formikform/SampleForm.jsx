@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { Form } from "../../../Components/FormElements/GeneralFormik";
 import { BasicButton } from "./sampleButton";
 import * as Yup from "yup";
+import { TableSearch } from "../../../Components/FormElements/FormComponents/TableSearch";
 
 export const SampleForm = () => {
   const countryAutoCompleteCompo = [
@@ -114,6 +115,24 @@ export const SampleForm = () => {
         },
       ],
     },
+    {
+      name: "category",
+      type: "component",
+      component: (props) => {
+        console.log(props, "props");
+        return (
+          <TableSearch
+            {...props}
+            name="category"
+            type="text"
+            label="Category"
+            value={props.value}
+            error={props.error}
+            onChange={(data) => props.onChangeData(data)}
+          />
+        );
+      },
+    },
   ];
   const initialValues = {
     email: "",
@@ -123,6 +142,7 @@ export const SampleForm = () => {
     fromDate: new Date(),
     toDate: new Date(),
     state: [],
+    category: "",
   };
   const formikRef = useRef(null);
 
