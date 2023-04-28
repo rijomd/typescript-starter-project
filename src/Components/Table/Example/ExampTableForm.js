@@ -1,5 +1,4 @@
 // import { useState, useEffect } from "react";
-// import DeleteIcon from "@mui/icons-material/Delete";
 
 // import { PageLayout } from "../../../Layout/Components/PageLayout";
 // import { TableForm } from '../../../Components/FormElements/TableForm';
@@ -12,8 +11,8 @@
 
 //   let actions: Array<any> = [
 //     { label: "New", icon: "", onClick: () => { let button = document.getElementById("table-form-newData"); button?.click(); }, },
-//     { label: "Save", icon: "", onClick: (data: Object) => { }, },
-//     { label: "Delete", icon: "", onClick: (data: Object) => { }, },
+//     { label: "Save", icon: "", onClick: () => { }, },
+//     { label: "Delete", icon: "", onClick: () => { let button = document.getElementById("table-form-deleteData"); button?.click(); }, },
 //   ];
 
 //   let headers: any[] = [
@@ -81,13 +80,16 @@
 //     return () => { }
 //   }, [])
 
+//   const deleteItems = (data: any) => {
+//     console.log(data, "data");
+//   }
 
 
 //   return (
 //     <PageLayout title="Add User" actions={actions}>
 //       <TableForm headers={headers} headerStyle={headerStyle} tableData={tableData}
 //         onRowSelected={true} pagination={false} initialData={initialData} extraColumn={extraColumn}
-//         onChangeRowSelected={(item: any[]) => console.log(item)} />
+//         deleteItems={deleteItems} />
 //     </PageLayout>
 //   );
 // };

@@ -3,18 +3,20 @@ import { Table, TableBody, TableContainer, TableHead, TableRow, TablePagination,
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { TextField, Checkbox } from "@mui/material";
 import { styled } from "@mui/material/styles";
-
+import { useForceUpdate } from '../../Services/Hook/Hook';
 import { stableSort, getComparator, filterByHeaders, selectFromCheckBox } from "./Methods/TableMethods";
 
 
 type Props = {
     headers: any[]; headerStyle: { [x: string]: string }; extraColumn: any[];
     tableData: any[]; onRowSelected: boolean; pagination: boolean, initialData: any;
-    onChangeRowSelected: (data: any[]) => void;
+    deleteItems: (data: any) => void;
+
 };
 
 export const TableForm = (props: Props) => {
-    const { headers = [], headerStyle, tableData = [], extraColumn = [], onRowSelected = false, pagination = false, initialData = {}, onChangeRowSelected } = props;
+    const { headers = [], headerStyle, tableData = [], extraColumn = [], onRowSelected = false, pagination = false, initialData = {}, deleteItems } = props;
+    const forceUpdate = useForceUpdate();
 
     const StyledTableCell: any = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: { backgroundColor: headerStyle.backgroundColor, color: headerStyle.color, ...headerStyle, },
@@ -54,9 +56,7 @@ export const TableForm = (props: Props) => {
         setNormalTableData(newArray);
     }
 
-    const deleteItems = () => {
 
-    }
 
     const saveItems = () => {
 
@@ -75,7 +75,9 @@ export const TableForm = (props: Props) => {
     };
 
     const handleChangeTable = (event: any, type: string, index: number) => {
-        let columnItem = { ...normalTableData[index] }
+        console.log(index, "index");
+        let newArray = [...normalTableData];
+        let columnItem = { ...newArray[index] }
         let newData;
         if (type === "text") {
             let name = event.target.name;
@@ -87,19 +89,17 @@ export const TableForm = (props: Props) => {
             let value = event.target.checked;
             newData = { ...columnItem, [name]: value };
         }
-        normalTableData[index] = newData;
-        setNormalTableData([...normalTableData, normalTableData[index]]);
+        newArray[index] = newData;
+        setNormalTableData([...newArray, newArray[index]]);
     }
 
     const handleClick = (data: any) => {
         let newSelected = selectFromCheckBox(selected, data);
         setSelected(newSelected);
-        onChangeRowSelected(newSelected);
-        // setForceUpdate(forceUpdate + 1);
+        forceUpdate();
     };
 
     const isSelected = (data: any) => {
-        console.log(data, "data")
         if (selected?.length > 0) {
             let exist = selected?.find((item: any) => JSON.stringify(item) === JSON.stringify(data));
             return exist ? true : false;
@@ -154,7 +154,6 @@ export const TableForm = (props: Props) => {
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((columnItem: any, columnKey: number) => {
                             const isItemSelected = isSelected(columnItem);
-                            console.log(isItemSelected, "isItemSelected");
                             return (
                                 <TableBody key={columnKey}>
                                     <TableRow hover={true} selected={isItemSelected}>
@@ -217,7 +216,7 @@ export const TableForm = (props: Props) => {
             )}
             <div>
                 <button id="table-form-newData" style={{ display: "none" }} onClick={addNewItem}>New</button>
-                <button id="table-form-deleteData" style={{ display: "none" }} onClick={deleteItems}>Delete</button>
+                <button id="table-form-deleteData" style={{ display: "none" }} onClick={() => deleteItems(selected)}>Delete</button>
                 <button id="table-form-saveData" style={{ display: "none" }} onClick={saveItems}>Save</button>
             </div>
         </div>
