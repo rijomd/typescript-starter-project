@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Table, TableBody, TableContainer, TableHead, TableRow, TablePagination, TableFooter } from "@mui/material";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { TextField, Checkbox } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useForceUpdate } from '../../Services/Hook/Hook';
-import { stableSort, getComparator, filterByHeaders, selectFromCheckBox } from "./Methods/TableMethods";
+import { filterByHeaders, selectFromCheckBox } from "../Table/Methods/TableMethods";
 
 
 type Props = {
@@ -39,24 +39,14 @@ export const TableForm = (props: Props) => {
 
     useEffect(() => {
         setNormalTableData([...tableData]);
-        setHeaderValues([...headers]);
+        setHeaderValues(headers);
         return () => { };
     }, [tableData]);
 
     const addNewItem = () => {
-        let newDataArray: any = [];
-        if (Object.keys(values).length > 0) {
-            setValues({});
-            newDataArray = [...tableData];
-        }
-        else {
-            newDataArray = [...normalTableData];
-        }
-        const newArray = [initialData].concat(newDataArray);
-        setNormalTableData(newArray);
+        // const newArray = [initialData].concat(normalTableData);
+        // setNormalTableData(newArray);
     }
-
-
 
     const saveItems = () => {
 
@@ -66,16 +56,15 @@ export const TableForm = (props: Props) => {
         let filterObject;
         if (!value) { delete values[filterType]; filterObject = { ...values }; }
         else { filterObject = { ...values, [filterType]: value.toString(), }; }
-        setValues(filterObject);
         if (Object.keys(filterObject)?.length > 0) {
             let filteredArray = filterByHeaders([...tableData], filterObject);
             setNormalTableData([...filteredArray]);
         }
         else { setNormalTableData([...tableData]); }
+        setValues(filterObject);
     };
 
     const handleChangeTable = (event: any, type: string, index: number) => {
-        console.log(index, "index");
         let newArray = [...normalTableData];
         let columnItem = { ...newArray[index] }
         let newData;
@@ -90,7 +79,7 @@ export const TableForm = (props: Props) => {
             newData = { ...columnItem, [name]: value };
         }
         newArray[index] = newData;
-        setNormalTableData([...newArray, newArray[index]]);
+        setNormalTableData(newArray);
     }
 
     const handleClick = (data: any) => {
@@ -106,7 +95,7 @@ export const TableForm = (props: Props) => {
         } else { return false; }
     };
 
-    const renderTableHead = useCallback(() => {
+    const renderTableHead = useMemo(() => {
         return headerValues.map((item: any, key: number) => {
             const { FilterComponent } = item;
             return (
@@ -129,7 +118,7 @@ export const TableForm = (props: Props) => {
                 </StyledTableCell>
             );
         });
-    }, [headerValues, values]);
+    }, [headerValues]);
 
     return (
         <div style={{ overflow: "hidden" }}>
@@ -141,7 +130,7 @@ export const TableForm = (props: Props) => {
                     <TableHead>
                         <TableRow>
                             {onRowSelected && (<StyledTableCell></StyledTableCell>)}
-                            {renderTableHead()}
+                            {renderTableHead}
                             {extraColumn?.length > 0 &&
                                 extraColumn.map((item: any, key: number) => (
                                     <StyledTableCell key={key} style={item?.style}>
@@ -150,51 +139,49 @@ export const TableForm = (props: Props) => {
                                 ))}
                         </TableRow>
                     </TableHead>
-                    {normalTableData.length > 0 && stableSort(normalTableData, getComparator('asc', "id"))
-                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        .map((columnItem: any, columnKey: number) => {
-                            const isItemSelected = isSelected(columnItem);
-                            return (
-                                <TableBody key={columnKey}>
-                                    <TableRow hover={true} selected={isItemSelected}>
-                                        {onRowSelected && (
-                                            <TableCell padding="checkbox">
+                    {normalTableData.length > 0 && normalTableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((columnItem: any, columnKey: number) => {
+                        const isItemSelected = isSelected(columnItem);
+                        return (
+                            <TableBody key={columnKey}>
+                                <TableRow hover={true} selected={isItemSelected}>
+                                    {onRowSelected && (
+                                        <TableCell padding="checkbox">
+                                            <Checkbox
+                                                color="primary"
+                                                checked={isItemSelected}
+                                                onClick={() => handleClick(columnItem)}
+                                            />
+                                        </TableCell>
+                                    )}
+                                    {headerValues.map((headItem: any, headKey: number) => {
+                                        return <TableCell key={headKey}>
+                                            {headItem.fieldType === "text" &&
+                                                <TextField name={headItem?.name}
+                                                    placeholder={headItem?.headerName}
+                                                    type={headItem?.type}
+                                                    disabled={headItem?.disabled}
+                                                    value={normalTableData[columnKey][headItem?.name]}
+                                                    onChange={(e) => handleChangeTable(e, "text", columnKey)}
+                                                />}
+                                            {headItem.fieldType === "checkBox" &&
                                                 <Checkbox
-                                                    color="primary"
-                                                    checked={isItemSelected}
-                                                    onClick={() => handleClick(columnItem)}
-                                                />
+                                                    name={headItem?.name}
+                                                    checked={normalTableData[columnKey][headItem?.name]}
+                                                    value={normalTableData[columnKey][headItem?.name]}
+                                                    onChange={(e) => handleChangeTable(e, "checkBox", columnKey)}
+                                                />}
+                                        </TableCell>
+                                    })}
+                                    {extraColumn?.length > 0 &&
+                                        extraColumn.map((item: any, key: number) => (
+                                            <TableCell key={key}>
+                                                {item?.renderActions([columnItem])}
                                             </TableCell>
-                                        )}
-                                        {headerValues.map((headItem: any, headKey: number) => {
-                                            return <TableCell key={headKey}>
-                                                {headItem.fieldType === "text" &&
-                                                    <TextField name={headItem?.name}
-                                                        placeholder={headItem?.headerName}
-                                                        type={headItem?.type}
-                                                        disabled={headItem?.disabled}
-                                                        value={normalTableData[columnKey][headItem?.name]}
-                                                        onChange={(e) => handleChangeTable(e, "text", columnKey)}
-                                                    />}
-                                                {headItem.fieldType === "checkBox" &&
-                                                    <Checkbox
-                                                        name={headItem?.name}
-                                                        checked={normalTableData[columnKey][headItem?.name]}
-                                                        value={normalTableData[columnKey][headItem?.name]}
-                                                        onChange={(e) => handleChangeTable(e, "checkBox", columnKey)}
-                                                    />}
-                                            </TableCell>
-                                        })}
-                                        {extraColumn?.length > 0 &&
-                                            extraColumn.map((item: any, key: number) => (
-                                                <TableCell key={key}>
-                                                    {item?.renderActions([columnItem])}
-                                                </TableCell>
-                                            ))}
-                                    </TableRow>
-                                </TableBody>
-                            );
-                        })}
+                                        ))}
+                                </TableRow>
+                            </TableBody>
+                        );
+                    })}
                     {normalTableData?.length === 0 && (
                         <TableFooter>
                             <TableRow><TableCell sx={{ textAlign: "center", border: "none" }} colSpan={headerValues.length}>No records found</TableCell></TableRow>
