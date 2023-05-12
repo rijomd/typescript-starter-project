@@ -17,10 +17,10 @@
 
 //   let headers: any[] = [
 //     {
-//       name: "id",
-//       headerName: "Id",
+//       name: "year",
+//       headerName: "Year",
 //       isFilterEnabled: true,
-//       editable: false,
+//       editable: true,
 //       fieldType: "text",
 //       type: "number"
 //     },
@@ -60,15 +60,15 @@
 //   ];
 
 //   let initialData: any = {
-//     id: "",
+//     year: "",
 //     title: "",
 //     runtime: 0,
 //     status: false
 //   }
 
 //   let headerStyle: any = {
-//     backgroundColor: "#b0b3d7",
-//     color: "white",
+//     backgroundColor: "#e2eaed",
+//     color: "black",
 //     textAlign: "start",
 //     height: "40px",
 //     width: "auto",
@@ -88,8 +88,8 @@
 //   return (
 //     <PageLayout title="Add User" actions={actions}>
 //       <TableForm headers={headers} headerStyle={headerStyle} tableData={tableData}
-//         onRowSelected={true} pagination={false} initialData={initialData} extraColumn={extraColumn}
-//         deleteItems={deleteItems} />
+//         onRowSelected={true} pagination={true} initialData={initialData} extraColumn={extraColumn}
+//         deleteItems={deleteItems} uniqueKey="id" />
 //     </PageLayout>
 //   );
 // };

@@ -4,18 +4,18 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { TextField, Checkbox } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useForceUpdate } from '../../Services/Hook/Hook';
-import { filterByHeaders, selectFromCheckBox } from "../Table/Methods/TableMethods";
+import { filterByHeaders, selectFromCheckBox } from "./Methods/TableMethods";
 
 
 type Props = {
     headers: any[]; headerStyle: { [x: string]: string }; extraColumn: any[];
     tableData: any[]; onRowSelected: boolean; pagination: boolean, initialData: any;
     deleteItems: (data: any) => void;
-
+    uniqueKey: string
 };
 
 export const TableForm = (props: Props) => {
-    const { headers = [], headerStyle, tableData = [], extraColumn = [], onRowSelected = false, pagination = false, initialData = {}, deleteItems } = props;
+    const { headers = [], headerStyle, tableData = [], extraColumn = [], onRowSelected = false, pagination = false, initialData = {}, deleteItems, uniqueKey } = props;
     const forceUpdate = useForceUpdate();
 
     const StyledTableCell: any = styled(TableCell)(({ theme }) => ({
@@ -44,8 +44,8 @@ export const TableForm = (props: Props) => {
     }, [tableData]);
 
     const addNewItem = () => {
-        // const newArray = [initialData].concat(normalTableData);
-        // setNormalTableData(newArray);
+        const newArray = [initialData].concat(normalTableData);
+        setNormalTableData(newArray);
     }
 
     const saveItems = () => {
@@ -64,10 +64,10 @@ export const TableForm = (props: Props) => {
         setValues(filterObject);
     };
 
-    const handleChangeTable = (event: any, type: string, index: number) => {
-        let newArray = [...normalTableData];
-        let columnItem = { ...newArray[index] }
+    const handleChangeTable = (event: any, type: string, columnItem: any) => {
         let newData;
+        let newArray = [...normalTableData];
+
         if (type === "text") {
             let name = event.target.name;
             let value = event.target.value;
@@ -78,6 +78,7 @@ export const TableForm = (props: Props) => {
             let value = event.target.checked;
             newData = { ...columnItem, [name]: value };
         }
+        let index = newArray.findIndex((x: any) => x[uniqueKey] === columnItem[uniqueKey]);
         newArray[index] = newData;
         setNormalTableData(newArray);
     }
@@ -100,21 +101,22 @@ export const TableForm = (props: Props) => {
             const { FilterComponent } = item;
             return (
                 <StyledTableCell key={key} style={{ width: item.width }}>
-                    {item.headerName}
                     {item.isFilterEnabled && (
-                        <div style={{ padding: "5px 0px" }}>
+                        <div style={{ padding: "10px 0px" }}>
                             {FilterComponent ? (<>{FilterComponent({ onchange: (data: any) => handleFilter(data, item.name), })}</>) :
                                 (<TextField
-                                    sx={{ width: "100%" }}
+                                    sx={{ width: "100%", background: "#fff", '&:hover fieldset': { border: 'none', }, 'fieldset': { border: 'none', }, }}
                                     placeholder={`Filter By ${item.headerName}`}
-                                    variant="standard"
+                                    variant="outlined"
                                     size="small"
                                     value={values[item.name]}
                                     autoComplete="off"
                                     onChange={(e) => handleFilter(e?.target.value, item.name)}
+                                    InputProps={{}}
                                 />)}
                         </div>
                     )}
+                    <p style={{ margin: "0px" }}> {item.headerName}</p>
                 </StyledTableCell>
             );
         });
@@ -125,8 +127,9 @@ export const TableForm = (props: Props) => {
             <TableContainer style={{ marginTop: "1rem" }}>
                 <Table
                     size="small"
-                    sx={{ borderCollapse: "separate", tableLayout: "fixed", width: "auto", margin: "auto", }}
+                    sx={{ borderCollapse: "separate", tableLayout: "fixed", width: "auto", }}
                 >
+
                     <TableHead>
                         <TableRow>
                             {onRowSelected && (<StyledTableCell></StyledTableCell>)}
@@ -134,11 +137,12 @@ export const TableForm = (props: Props) => {
                             {extraColumn?.length > 0 &&
                                 extraColumn.map((item: any, key: number) => (
                                     <StyledTableCell key={key} style={item?.style}>
-                                        {item.headerName}
+                                        {/* {item.headerName} */}
                                     </StyledTableCell>
                                 ))}
                         </TableRow>
                     </TableHead>
+
                     {normalTableData.length > 0 && normalTableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((columnItem: any, columnKey: number) => {
                         const isItemSelected = isSelected(columnItem);
                         return (
@@ -160,15 +164,15 @@ export const TableForm = (props: Props) => {
                                                     placeholder={headItem?.headerName}
                                                     type={headItem?.type}
                                                     disabled={headItem?.disabled}
-                                                    value={normalTableData[columnKey][headItem?.name]}
-                                                    onChange={(e) => handleChangeTable(e, "text", columnKey)}
+                                                    value={columnItem[headItem?.name]}
+                                                    onChange={(e) => handleChangeTable(e, "text", columnItem)}
                                                 />}
                                             {headItem.fieldType === "checkBox" &&
                                                 <Checkbox
                                                     name={headItem?.name}
-                                                    checked={normalTableData[columnKey][headItem?.name]}
-                                                    value={normalTableData[columnKey][headItem?.name]}
-                                                    onChange={(e) => handleChangeTable(e, "checkBox", columnKey)}
+                                                    checked={columnItem[headItem?.name]}
+                                                    value={columnItem[headItem?.name]}
+                                                    onChange={(e) => handleChangeTable(e, "checkBox", columnItem)}
                                                 />}
                                         </TableCell>
                                     })}
@@ -182,25 +186,35 @@ export const TableForm = (props: Props) => {
                             </TableBody>
                         );
                     })}
+
                     {normalTableData?.length === 0 && (
                         <TableFooter>
-                            <TableRow><TableCell sx={{ textAlign: "center", border: "none" }} colSpan={headerValues.length}>No records found</TableCell></TableRow>
+                            <TableRow><TableCell sx={{ textAlign: "center", border: "none" }} colSpan={headerValues.length + extraColumn?.length}>No records found</TableCell></TableRow>
                         </TableFooter>
                     )}
+
+                    {pagination && normalTableData?.length !== 0 && (
+                        <TableFooter>
+                            <TableRow>
+                                <TableCell colSpan={headerValues.length + extraColumn?.length + 1} >
+                                    <TablePagination
+                                        style={{ borderBottom: "1px solid #ccc" }}
+                                        rowsPerPageOptions={[10, 25, 50, 100]}
+                                        component="div"
+                                        count={normalTableData?.length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={page}
+                                        onPageChange={handleChangePage}
+                                        onRowsPerPageChange={handleChangeRowsPerPage}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        </TableFooter>
+                    )}
+
                 </Table>
             </TableContainer>
-            {pagination && normalTableData?.length !== 0 && (
-                <TablePagination
-                    style={{ borderBottom: "1px solid #ccc" }}
-                    rowsPerPageOptions={[10, 25, 50, 100]}
-                    component="div"
-                    count={normalTableData?.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-            )}
+
             <div>
                 <button id="table-form-newData" style={{ display: "none" }} onClick={addNewItem}>New</button>
                 <button id="table-form-deleteData" style={{ display: "none" }} onClick={() => deleteItems(selected)}>Delete</button>
