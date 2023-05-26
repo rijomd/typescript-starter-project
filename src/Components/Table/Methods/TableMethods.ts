@@ -82,3 +82,76 @@ export const filterByHeaders = (tableData: any[], filterObject: any): any[] => {
     });
   });
 };
+
+// export const formERrorValidation = (validations, data) => {
+//   let valid = true;
+//   const newErrors = [];
+//   for (const key in validations) {
+//     const validation = validations[key];
+//     for (let item in data) {
+//       const value = item[key];
+//       if (validation?.required?.value && !value) {
+//         valid = false;
+//         newErrors[key] = validation?.required?.message;
+//       }
+//       const pattern = validation?.pattern;
+//       if (pattern?.value && !RegExp(pattern.value).test(value)) {
+//         valid = false;
+//         newErrors[key] = pattern.message;
+//       }
+//       const custom = validation?.custom;
+//       if (custom?.isValid && !custom.isValid(value)) {
+//         valid = false;
+//         newErrors[key] = custom.message;
+//       }
+//     }
+//   }
+//   return newErrors;
+// }
+
+export const tableFormERrorValidation: any = (
+  validations: any[],
+  dataArray = [],
+  uniqueKey: any
+) => {
+  let valid = true;
+  var newErrors: any[] = [];
+
+  for (let key in validations) {
+    const validation = validations[key];
+    let error: any = {};
+
+    dataArray.map((data: any, index: any) => {
+      for (let item in data) {
+        let value = item[key];
+        // REQUIRED
+        if (validation?.required?.value && !value) {
+          valid = false;
+          error["errorKey"] = key;
+          error["message"] = validation?.required?.message;
+          // error[key] = validation?.required?.message;
+        }
+        // PATTERN
+        const pattern = validation?.pattern;
+        if (pattern?.value && !RegExp(pattern.value).test(value)) {
+          valid = false;
+          error["errorKey"] = key;
+          error["message"] = pattern?.message;
+          // error[key] = pattern.message;
+        }
+        // CUSTOM
+        const custom = validation?.custom;
+        if (custom?.isValid && !custom.isValid(value)) {
+          valid = false;
+          error["errorKey"] = key;
+          error["message"] = custom?.message;
+          // error[key] = custom.message;
+        }
+      }
+      newErrors.push({ ...error, index: data[uniqueKey] || index });
+    });
+  }
+  // if (newErrors?.length > 0) { generateValidation(newErrors) }
+
+  return newErrors;
+};

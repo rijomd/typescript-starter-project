@@ -1,21 +1,24 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Table, TableBody, TableContainer, TableHead, TableRow, TablePagination, TableFooter } from "@mui/material";
+import { Table, TableBody, TableContainer, TableHead, TableRow, TablePagination, TableFooter, Button } from "@mui/material";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { TextField, Checkbox } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useForceUpdate } from '../../Services/Hook/Hook';
-import { filterByHeaders, selectFromCheckBox } from "./Methods/TableMethods";
+import { filterByHeaders, selectFromCheckBox, tableFormERrorValidation } from "./Methods/TableMethods";
 
 
 type Props = {
     headers: any[]; headerStyle: { [x: string]: string }; extraColumn: any[];
     tableData: any[]; onRowSelected: boolean; pagination: boolean, initialData: any;
     deleteItems: (data: any) => void;
-    uniqueKey: string
+    saveItems: (data: any) => void;
+    uniqueKey: string;
+    validations: any;
 };
 
 export const TableForm = (props: Props) => {
-    const { headers = [], headerStyle, tableData = [], extraColumn = [], onRowSelected = false, pagination = false, initialData = {}, deleteItems, uniqueKey } = props;
+    const { headers = [], headerStyle, tableData = [], extraColumn = [], onRowSelected = false,
+        pagination = false, initialData = {}, deleteItems, uniqueKey, saveItems, validations = {} } = props;
     const forceUpdate = useForceUpdate();
 
     const StyledTableCell: any = styled(TableCell)(({ theme }) => ({
@@ -33,6 +36,10 @@ export const TableForm = (props: Props) => {
     const [page, setPage] = useState(0);
 
     const [selected, setSelected] = useState<any[]>([]);
+    const [setsOfEditedId, setSetsOfEditedId] = useState<any[]>([]);
+
+    // for error validations
+    const [fieldsErrors, setFieldsErrors] = useState<any>([]);
 
     const handleChangePage = (event: unknown, newPage: number) => { setPage(newPage); };
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => { setRowsPerPage(+event.target.value); setPage(0); };
@@ -48,9 +55,16 @@ export const TableForm = (props: Props) => {
         setNormalTableData(newArray);
     }
 
-    const saveItems = () => {
-
+    const saveTableItems = (e: any) => {
+        e.preventDefault();
+        // setFieldsErrors([]);
+        // let editedData = normalTableData.filter(tableItem => setsOfEditedId.includes(tableItem[uniqueKey]));
+        // let editedNewData = normalTableData.filter(tableItem => !tableItem[uniqueKey]);
+        // let anyErrors = tableFormERrorValidation(validations, editedNewData.concat(editedData), uniqueKey);
+        // setFieldsErrors(anyErrors);
+        // saveItems(editedNewData.concat(editedData));
     }
+    console.log(fieldsErrors, "fieldsErrors");
 
     const handleFilter = (value: string, filterType: string) => {
         let filterObject;
@@ -67,6 +81,13 @@ export const TableForm = (props: Props) => {
     const handleChangeTable = (event: any, type: string, columnItem: any) => {
         let newData;
         let newArray = [...normalTableData];
+        let editIdArray = [...setsOfEditedId];
+        if (columnItem[uniqueKey]) {
+            let editId = columnItem[uniqueKey];
+            let findItem = setsOfEditedId.find(x => x === editId);
+            if (findItem == undefined) { editIdArray.push(editId); }
+        }
+        setSetsOfEditedId(editIdArray);
 
         if (type === "text") {
             let name = event.target.name;
@@ -166,6 +187,11 @@ export const TableForm = (props: Props) => {
                                                     disabled={headItem?.disabled}
                                                     value={columnItem[headItem?.name]}
                                                     onChange={(e) => handleChangeTable(e, "text", columnItem)}
+                                                // helperText={fieldsErrors.map((errorItem: any, errorKey: number) => {
+                                                //     if (errorItem.errorKey === headItem?.name && (errorItem.index === headItem[uniqueKey] || errorItem.index === columnKey)) {
+                                                //         return errorItem?.message
+                                                //     }
+                                                // })}
                                                 />}
                                             {headItem.fieldType === "checkBox" &&
                                                 <Checkbox
@@ -193,10 +219,13 @@ export const TableForm = (props: Props) => {
                         </TableFooter>
                     )}
 
-                    {pagination && normalTableData?.length !== 0 && (
+                    {pagination && (
                         <TableFooter>
                             <TableRow>
-                                <TableCell colSpan={headerValues.length + extraColumn?.length + 1} >
+                                <TableCell colSpan={2} >
+                                    <Button variant="text" onClick={() => { setValues({}); setNormalTableData([...tableData]); forceUpdate(); }}>Clear Filter</Button>
+                                </TableCell>
+                                <TableCell colSpan={headerValues.length + extraColumn?.length - 1} >
                                     <TablePagination
                                         style={{ borderBottom: "1px solid #ccc" }}
                                         rowsPerPageOptions={[10, 25, 50, 100]}
@@ -218,7 +247,7 @@ export const TableForm = (props: Props) => {
             <div>
                 <button id="table-form-newData" style={{ display: "none" }} onClick={addNewItem}>New</button>
                 <button id="table-form-deleteData" style={{ display: "none" }} onClick={() => deleteItems(selected)}>Delete</button>
-                <button id="table-form-saveData" style={{ display: "none" }} onClick={saveItems}>Save</button>
+                <button id="table-form-saveData" style={{ display: "none" }} onClick={(e) => saveTableItems(e)}>Save</button>
             </div>
         </div>
     );
