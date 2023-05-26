@@ -51,20 +51,20 @@ export const TableForm = (props: Props) => {
     }, [tableData]);
 
     const addNewItem = () => {
+        setFieldsErrors([]);
         const newArray = [initialData].concat(normalTableData);
         setNormalTableData(newArray);
     }
 
     const saveTableItems = (e: any) => {
         e.preventDefault();
-        // setFieldsErrors([]);
-        // let editedData = normalTableData.filter(tableItem => setsOfEditedId.includes(tableItem[uniqueKey]));
-        // let editedNewData = normalTableData.filter(tableItem => !tableItem[uniqueKey]);
-        // let anyErrors = tableFormERrorValidation(validations, editedNewData.concat(editedData), uniqueKey);
-        // setFieldsErrors(anyErrors);
-        // saveItems(editedNewData.concat(editedData));
+        setFieldsErrors([]);
+        let editedData = normalTableData.filter(tableItem => setsOfEditedId.includes(tableItem[uniqueKey]));
+        let editedNewData = normalTableData.filter(tableItem => !tableItem[uniqueKey]);
+        let anyErrors = tableFormERrorValidation(validations, editedNewData.concat(editedData), uniqueKey);
+        setFieldsErrors(anyErrors);
+        if (anyErrors?.length === 0) { saveItems(editedNewData.concat(editedData)); }
     }
-    console.log(fieldsErrors, "fieldsErrors");
 
     const handleFilter = (value: string, filterType: string) => {
         let filterObject;
@@ -78,7 +78,7 @@ export const TableForm = (props: Props) => {
         setValues(filterObject);
     };
 
-    const handleChangeTable = (event: any, type: string, columnItem: any) => {
+    const handleChangeTable = (event: any, type: string, columnItem: any, newIndex: number) => {
         let newData;
         let newArray = [...normalTableData];
         let editIdArray = [...setsOfEditedId];
@@ -99,9 +99,14 @@ export const TableForm = (props: Props) => {
             let value = event.target.checked;
             newData = { ...columnItem, [name]: value };
         }
-        let index = newArray.findIndex((x: any) => x[uniqueKey] === columnItem[uniqueKey]);
+
+        let index: any;
+        if (columnItem[uniqueKey]) { index = newArray.findIndex((x: any) => x[uniqueKey] === columnItem[uniqueKey]); }
+        else { index = newIndex }
+
         newArray[index] = newData;
         setNormalTableData(newArray);
+
     }
 
     const handleClick = (data: any) => {
@@ -179,6 +184,7 @@ export const TableForm = (props: Props) => {
                                         </TableCell>
                                     )}
                                     {headerValues.map((headItem: any, headKey: number) => {
+                                        let isError = fieldsErrors.filter((item: any) => item.errorKey === headItem?.name && (item.index === headItem[uniqueKey] || item.index === columnKey));
                                         return <TableCell key={headKey}>
                                             {headItem.fieldType === "text" &&
                                                 <TextField name={headItem?.name}
@@ -186,19 +192,20 @@ export const TableForm = (props: Props) => {
                                                     type={headItem?.type}
                                                     disabled={headItem?.disabled}
                                                     value={columnItem[headItem?.name]}
-                                                    onChange={(e) => handleChangeTable(e, "text", columnItem)}
-                                                // helperText={fieldsErrors.map((errorItem: any, errorKey: number) => {
-                                                //     if (errorItem.errorKey === headItem?.name && (errorItem.index === headItem[uniqueKey] || errorItem.index === columnKey)) {
-                                                //         return errorItem?.message
-                                                //     }
-                                                // })}
+                                                    onChange={(e) => handleChangeTable(e, "text", columnItem, columnKey)}
+                                                    error={isError.length > 0 || false}
+                                                    helperText={fieldsErrors.map((errorItem: any, textIndex: number) => {
+                                                        if (errorItem.errorKey === headItem?.name && (errorItem.index === headItem[uniqueKey] || errorItem.index === columnKey)) {
+                                                            return errorItem?.message
+                                                        }
+                                                    })}
                                                 />}
                                             {headItem.fieldType === "checkBox" &&
                                                 <Checkbox
                                                     name={headItem?.name}
                                                     checked={columnItem[headItem?.name]}
                                                     value={columnItem[headItem?.name]}
-                                                    onChange={(e) => handleChangeTable(e, "checkBox", columnItem)}
+                                                    onChange={(e) => handleChangeTable(e, "checkBox", columnItem, columnKey)}
                                                 />}
                                         </TableCell>
                                     })}
