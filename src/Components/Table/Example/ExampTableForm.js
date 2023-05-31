@@ -8,10 +8,11 @@
 // type Props = {};
 
 // const UserAdd = (props: Props) => {
+//   const [tableData, setTableData] = useState<any>(dataArray);
 
 //   let actions: Array<any> = [
 //     { label: "New", icon: "", onClick: () => { let button = document.getElementById("table-form-newData"); button?.click(); }, },
-//     { label: "Save", icon: "", onClick: () => { }, },
+//     { label: "Save", icon: "", onClick: () => { let button = document.getElementById("table-form-saveData"); button?.click(); }, },
 //     { label: "Delete", icon: "", onClick: () => { let button = document.getElementById("table-form-deleteData"); button?.click(); }, },
 //   ];
 
@@ -22,7 +23,7 @@
 //       isFilterEnabled: true,
 //       editable: true,
 //       fieldType: "text",
-//       type: "number"
+//       type: "number",
 //     },
 //     {
 //       name: "title",
@@ -38,7 +39,7 @@
 //       isFilterEnabled: true,
 //       editable: true,
 //       fieldType: "text",
-//       type: "number"
+//       type: "text"
 //     },
 //     {
 //       name: "status",
@@ -73,7 +74,26 @@
 //     height: "40px",
 //     width: "auto",
 //   }
-//   const [tableData, setTableData] = useState<any>(dataArray);
+
+//   let validations = {
+//     runtime: {
+//       pattern: {
+//         value: '^[A-Za-z]*$',
+//         message: "You're not allowed to...",
+//       },
+//       custom: {
+//         isValid: (value: any) => parseInt(value, 10) > 200,
+//         message: 'You have to be at least 200',
+//       },
+//     },
+//     title: {
+//       required: {
+//         value: true,
+//         message: 'This field is required',
+//       },
+//     },
+//   };
+
 
 //   useEffect(() => {
 //     setTableData(dataArray)
@@ -84,14 +104,17 @@
 //     console.log(data, "data");
 //   }
 
+//   const saveItems = (data: any) => {
+//     console.log(data, "data");
+//   }
 
 //   return (
 //     <PageLayout title="Add User" actions={actions}>
 //       <TableForm headers={headers} headerStyle={headerStyle} tableData={tableData}
 //         onRowSelected={true} pagination={true} initialData={initialData} extraColumn={extraColumn}
-//         deleteItems={deleteItems} uniqueKey="id" />
+//         deleteItems={deleteItems} uniqueKey="id" saveItems={saveItems} validations={validations} />
 //     </PageLayout>
 //   );
 // };
-
+// // uniqueKey is must one
 // export default UserAdd;
