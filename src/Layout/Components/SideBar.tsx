@@ -63,7 +63,9 @@ const SideBar = () => {
         <ListItemButton
           onClick={(event) => handleListItemClick(event, key, item.path, type)}
         >
-          <ListItemIcon>{item.icon}</ListItemIcon>
+          <ListItemIcon >
+            {item.icon}
+          </ListItemIcon>
           <ListItemText primary={item.name} />
           {item.submenu.length > 0 && (open ? <ExpandLess /> : <ExpandMore />)}
         </ListItemButton>
