@@ -122,11 +122,36 @@ export const TableForm = (props: Props) => {
         } else { return false; }
     };
 
+    // for resizing
+    const [initialPos, setInitialPos] = React.useState<any>(null);
+    const [initialSize, setInitialSize] = React.useState<any>(null);
+
+    const initial = (e: any, id: any) => {
+        let resizable = document.getElementById(id);
+        setInitialPos(e.clientX);
+        if (resizable) {
+            setInitialSize(resizable?.offsetWidth);
+        }
+    }
+
+    const resize = (e: any, id: any) => {
+        let resizable = document.getElementById(id);
+        if (resizable) {
+            let width = e.clientX - initialPos;
+            resizable.style.width = `${parseInt(initialSize) + width}px`;
+        }
+    }
+
     const renderTableHead = useMemo(() => {
         return headerValues.map((item: any, key: number) => {
             const { FilterComponent } = item;
             return (
-                <StyledTableCell key={key} style={{ width: item.width }}>
+                <StyledTableCell key={key}
+                    style={{ width: item?.width, cursor: "col-resize" }}
+                    id={item.id}
+                    draggable='true'
+                    onDragStart={(e: any) => initial(e, item.id)}
+                    onDrag={(e: any) => resize(e, item.id)}>
                     {item.isFilterEnabled && (
                         <div style={{ padding: "10px 0px" }}>
                             {FilterComponent ? (<>{FilterComponent({ onchange: (data: any) => handleFilter(data, item.name), })}</>) :
