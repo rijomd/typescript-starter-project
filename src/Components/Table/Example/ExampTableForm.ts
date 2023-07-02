@@ -110,9 +110,36 @@
 
 //   return (
 //     <PageLayout title="Add User" actions={actions}>
-//       <TableForm headers={headers} headerStyle={headerStyle} tableData={tableData}
-//         onRowSelected={true} pagination={true} initialData={initialData} extraColumn={extraColumn}
-//         deleteItems={deleteItems} uniqueKey="id" saveItems={saveItems} validations={validations} />
+//       <TableForm
+// uniqueKey="sr_no"
+// ref={tableFormRef}
+// headers={PoItemDetailsHeaders}
+// subHeaders={subHeaders}
+// extraColumn={[]}
+// headerStyle={PoItemDetailsHeadersStyle}
+// tableData={purchaseOrderState?.purchaseOrderListData?.purchaseOrderDetails}
+// initialData={purchaseOrderState?.poItemDetailTableFormInitialValues}
+// dropdownOptions={{
+//     item_name: purchaseOrderState?.itemListInHeader,
+//     item_code: purchaseOrderState?.itemListInHeader,
+//     uom: purchaseOrderState?.itemUnitsList
+// }}
+// onRowSelected={true}
+// pagination={false}
+// isAllHeaderFilterEnable={false}
+// enableSubRowsInsideRow={true}
+// dispatchHandleChange={dispatchHandleChange}
+// saveItems={submitPoDetailsTable}
+// deleteItems={deleteItems}
+// validations={validations}
+// autoFixTableValues={[{ key: "sr_no", type: "autoIncrement", value: "index" }]} //setting custom value as index of table
+// keyValuePairToValue={[
+//     { fieldKey: "item_code", objectKey: "item_code" },
+//     { fieldKey: "item_name", objectKey: "item_name" },
+//     { fieldKey: "specification", objectKey: "specification" },
+//     { fieldKey: "uom", objectKey: "unit_code" }
+// ]} //setting key value pair(eg: <FormTableSearch /> get value as object) to single value, objectKey from FormTableSearch listHeader
+// />
 //     </PageLayout>
 //   );
 // };
