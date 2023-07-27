@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import "../Style/style.css";
+import "./Style/style.css";
 
 export const TableResize = () => {
     const headerItems = ["Name", "Year", "Address"];
@@ -39,6 +39,28 @@ export const TableResize = () => {
         resizer.addEventListener('mousedown', mouseDownHandler);
     };
 
+    const createResizableRow = function (col, resizer) {
+        console.log(col, resizer, "createResizableRow");
+        let y = 0; let h = 0;
+        const mouseDownHandler = function (e) {
+            y = e.clientY;
+            const styles = window.getComputedStyle(col);
+            h = parseInt(styles.height, 10);
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+        };
+        const mouseMoveHandler = function (e) {
+            const dx = e.clientY - y;
+            col.style.height = `${h + dx}px`;
+        };
+        const mouseUpHandler = function () {
+            document.removeEventListener('mousemove', mouseMoveHandler);
+            document.removeEventListener('mouseup', mouseUpHandler);
+        };
+        resizer.addEventListener('mousedown', mouseDownHandler);
+    };
+
+
     useEffect(() => {
         const table = document.getElementById('resizeMe');
         const cols = table.querySelectorAll('th');
@@ -51,6 +73,14 @@ export const TableResize = () => {
             createResizableColumn(col, resizer);
         });
 
+        const rows = table.querySelectorAll('tr');
+        [].forEach.call(rows, function (row) {
+            const resizer = document.createElement('div');
+            resizer.classList.add('rowResizer');
+            resizer.style.width = `${table.offsetWidth}px`;
+            row.appendChild(resizer);
+            createResizableRow(row, resizer);
+        });
         return () => { }
     }, [])
 

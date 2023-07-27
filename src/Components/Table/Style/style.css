@@ -1,0 +1,42 @@
+.table th {
+    position: relative;
+}
+
+.table tr {
+    position: relative;
+}
+
+table,
+th,
+td {
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+}
+
+.resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5px;
+    cursor: col-resize;
+    user-select: none;
+}
+
+.rowResizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 5px;
+    cursor: col-resize;
+    user-select: none;
+}
+
+.rowResizer:hover,
+.resizing {
+    border-right: 2px solid blue;
+}
+
+.resizer:hover,
+.resizing {
+    border-right: 2px solid blue;
+}
